@@ -1,0 +1,19 @@
+# Ignore Terraform state and lock files
+*.tfstate
+*.backup
+.terraform/
+.terraform.lock.hcl
+_provider.tf
+
+# Ignore sensitive variables
+terraform.tfvars
+terraform.tfvars.json
+
+#ignore python venv and chaches
+.venv
+__pycache__
+
+# secrets
+.envrc
+
+
