@@ -1,11 +1,11 @@
 resource "kubernetes_deployment" "api" {
   metadata {
-    name = "fastpi"
+    name      = "fastpi"
     namespace = kubernetes_namespace.test_namespace.metadata[0].name
     labels = {
-        app = "api"
-        environment = "dev"
-        tier = "backend"
+      app         = "api"
+      environment = "dev"
+      tier        = "backend"
     }
   }
   spec {
@@ -23,7 +23,7 @@ resource "kubernetes_deployment" "api" {
       }
       spec {
         container {
-          name = "api"
+          name  = "api"
           image = "${var.image}:${var.tag}"
         }
         service_account_name = kubernetes_service_account.kubernetes_admin.metadata[0].name

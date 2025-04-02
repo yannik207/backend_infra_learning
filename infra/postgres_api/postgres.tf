@@ -3,16 +3,16 @@ resource "kubernetes_namespace" "test_namespace" {
     name = "yannik-test-namespace"
     labels = {
       environment = "dev"
-      managed-by = "terraform"
+      managed-by  = "terraform"
     }
   }
 }
 
 resource "kubernetes_service" "postgres-service" {
-    metadata {
-      name = "yannik-postgres-svc"
-      namespace = kubernetes_namespace.test_namespace.metadata[0].name
-    }
+  metadata {
+    name      = "yannik-postgres-svc"
+    namespace = kubernetes_namespace.test_namespace.metadata[0].name
+  }
 
   spec {
     selector = {
@@ -20,38 +20,38 @@ resource "kubernetes_service" "postgres-service" {
     }
 
     port {
-      port       = 5432          # Port on which the service will be exposed
-      target_port = 5432         # Port on the pod to which traffic will be directed
-      protocol   = "TCP"         # Protocol (TCP is common for Postgres)
+      port        = 5432  # Port on which the service will be exposed
+      target_port = 5432  # Port on the pod to which traffic will be directed
+      protocol    = "TCP" # Protocol (TCP is common for Postgres)
     }
 
-    type = "ClusterIP"            # You can also set this to LoadBalancer or NodePort if required
+    type = "ClusterIP" # You can also set this to LoadBalancer or NodePort if required
   }
-  
+
 }
 
 resource "kubernetes_persistent_volume_claim" "pg-volume" {
-    metadata {
-        name = "postgres-volume"
-        namespace = kubernetes_namespace.test_namespace.metadata[0].name
+  metadata {
+    name      = "postgres-volume"
+    namespace = kubernetes_namespace.test_namespace.metadata[0].name
+  }
+  spec {
+    access_modes = ["ReadWriteOnce"]
+    resources {
+      requests = {
+        storage = "8Gi"
+      }
     }
-    spec {
-        access_modes = ["ReadWriteOnce"]
-        resources {
-            requests = {
-                storage = "8Gi"
-                }
-            }
     storage_class_name = "standard"
-    }
+  }
 }
 
 resource "kubernetes_stateful_set" "postgres-stateful" {
   metadata {
-    name = "postgres"
+    name      = "postgres"
     namespace = kubernetes_namespace.test_namespace.metadata[0].name
     labels = {
-      app = "postgres"
+      app  = "postgres"
       tier = "backend"
     }
   }
@@ -73,26 +73,26 @@ resource "kubernetes_stateful_set" "postgres-stateful" {
       }
       spec {
         container {
-          name = "postgres"
+          name  = "postgres"
           image = "postgres:latest"
 
           env {
-            name = "POSTGRES_PASSWORD"
+            name  = "POSTGRES_PASSWORD"
             value = var.postgres_password
           }
 
-         env {
-            name = "PGDATA"
+          env {
+            name  = "PGDATA"
             value = "/var/lib/postgresql/data/pgdata"
           }
-          
+
           volume_mount {
-            name = "postgres-storage"
+            name       = "postgres-storage"
             mount_path = "/var/lib/postgresql/data"
           }
         }
         volume {
-            name = "postgres-storage"
+          name = "postgres-storage"
           persistent_volume_claim {
             claim_name = kubernetes_persistent_volume_claim.pg-volume.metadata[0].name
           }
@@ -105,12 +105,12 @@ resource "kubernetes_stateful_set" "postgres-stateful" {
 
 resource "kubernetes_deployment" "pgadmin-deployment" {
   metadata {
-    name = "pgadmin"
+    name      = "pgadmin"
     namespace = kubernetes_namespace.test_namespace.metadata[0].name
     labels = {
-      app = "postgres"
+      app         = "postgres"
       environment = "dev"
-      tier = "fronted"
+      tier        = "fronted"
     }
   }
   spec {
@@ -128,16 +128,16 @@ resource "kubernetes_deployment" "pgadmin-deployment" {
       }
       spec {
         container {
-          name = "pg-admin-container"
+          name  = "pg-admin-container"
           image = "dpage/pgadmin4"
 
           env {
-            name = "PGADMIN_DEFAULT_EMAIL"
+            name  = "PGADMIN_DEFAULT_EMAIL"
             value = var.admin_mail
           }
-        
+
           env {
-            name = "PGADMIN_DEFAULT_PASSWORD"
+            name  = "PGADMIN_DEFAULT_PASSWORD"
             value = var.admin_password
           }
         }
@@ -149,7 +149,7 @@ resource "kubernetes_deployment" "pgadmin-deployment" {
 
 resource "kubernetes_service" "pgadmin-service" {
   metadata {
-    name = "pgadmin-service"
+    name      = "pgadmin-service"
     namespace = kubernetes_namespace.test_namespace.metadata[0].name
   }
   spec {
@@ -157,9 +157,9 @@ resource "kubernetes_service" "pgadmin-service" {
       app = "pgadmin"
     }
     port {
-      port = 5050
+      port        = 5050
       target_port = 80
-      protocol = "TCP"
+      protocol    = "TCP"
     }
     type = "ClusterIP"
   }
