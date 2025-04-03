@@ -9,41 +9,40 @@ resource "google_biglake_catalog" "iceboerg-catalog" {
   location = "EU"
 }
 
-resource "google_biglake_database" "name" {
+resource "google_biglake_database" "icebörg-catalog-database" {
   name    = "yanniks_iceboerg_catalog_database"
   catalog = google_biglake_catalog.iceboerg-catalog.id
   type    = "HIVE"
   hive_options {
-    location_uri = "${google_storage_bucket_object.metadata_folder.bucket}/${google_storage_bucket_object.metadata_folder.name}"
+    location_uri = "${google_storage_bucket.iceberg_lakehouse.name}/${google_storage_bucket_object.metadata_folder.name}"
     parameters = {
-      "owner" = "yannik"
+      "owner" = "Why SL Know Plug"
     }
   }
 }
 
 ## from terraform registry
-# needs to get populated
-# resource "google_biglake_table" "table" {
-#     name = "my_table"
-#     database = google_biglake_database.database.id
-#     type = "HIVE"
-#     hive_options {
-#       table_type = "MANAGED_TABLE"
-#       storage_descriptor {
-#         location_uri = "gs://${google_storage_bucket.bucket.name}/${google_storage_bucket_object.data_folder.name}"
-#         input_format  = "org.apache.hadoop.mapred.SequenceFileInputFormat"
-#         output_format = "org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat"
-#       }
-#       # Some Example Parameters.
-#       parameters = {
-#         "spark.sql.create.version" = "3.1.3"
-#         "spark.sql.sources.schema.numParts" = "1"
-#         "transient_lastDdlTime" = "1680894197"
-#         "spark.sql.partitionProvider" = "catalog"
-#         "owner" = "John Doe"
-#         "spark.sql.sources.schema.part.0"= "{\"type\":\"struct\",\"fields\":[{\"name\":\"id\",\"type\":\"integer\",\"nullable\":true,\"metadata\":{}},{\"name\":\"name\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"age\",\"type\":\"integer\",\"nullable\":true,\"metadata\":{}}]}"
-#         "spark.sql.sources.provider" = "iceberg"
-#         "provider" = "iceberg"
-#       }
-#   }
-# }
+resource "google_biglake_table" "icebörg-catalog-database-table" {
+    name = "mbeezy"
+    database = google_biglake_database.icebörg-catalog-database.id
+    type = "HIVE"
+    hive_options {
+      table_type = "MANAGED_TABLE"
+      storage_descriptor {
+        location_uri = "gs://${google_storage_bucket.iceberg_lakehouse.name}/${google_storage_bucket_object.data_folder.name}"
+        input_format  = "org.apache.hadoop.mapred.SequenceFileInputFormat"
+        output_format = "org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat"
+      }
+      # Some Example Parameters.
+      parameters = {
+        "spark.sql.create.version" = "3.1.3"
+        "spark.sql.sources.schema.numParts" = "1"
+        "transient_lastDdlTime" = "1680894197"
+        "spark.sql.partitionProvider" = "catalog"
+        "owner" = "Money boy aka mbeezy"
+        "spark.sql.sources.schema.part.0"= "{\"type\":\"struct\",\"fields\":[{\"name\":\"id\",\"type\":\"integer\",\"nullable\":true,\"metadata\":{}},{\"name\":\"name\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"age\",\"type\":\"integer\",\"nullable\":true,\"metadata\":{}}]}"
+        "spark.sql.sources.provider" = "iceberg"
+        "provider" = "iceberg"
+      }
+  }
+}
