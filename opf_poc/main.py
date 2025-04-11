@@ -27,6 +27,8 @@ else:
     table = catalog.load_table("default.taxi_dataset")
 
 table.overwrite(df)
-print(table.scan().to_arrow())
 
+# print(table.scan().to_arrow())
+# print(table.inspect.snapshots())
+print(table.inspect.partitions())
 #df = df.append_column("tip_per_mile", pc.divide(df["tip_amount"], df["trip_distance"]))
