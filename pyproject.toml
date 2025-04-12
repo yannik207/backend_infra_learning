@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pyiceberg = {extras = ["sql-sqlite"], version = "^0.9.0"}
+pyiceberg = {extras = ["sql-postgres"], version = "^0.9.0"}
 pyarrow = "^19.0.1"
 
 

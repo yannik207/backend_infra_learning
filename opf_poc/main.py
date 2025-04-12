@@ -1,14 +1,18 @@
 from pyiceberg.catalog import load_catalog
 import pyarrow.parquet as pq
 import pyarrow.compute as pc
+from os import getenv
 
-warehouse_path = "./warehouse"
+
+postgres_connection = getenv.environ("postgres_connection")
+
+warehouse_path = "yannik-test-iceberg-lakehouse"
 catalog = load_catalog(
     "default",
     **{
         'type': 'sql',
-        "uri": f"sqlite:///{warehouse_path}/pyiceberg_catalog.db",
-        "warehouse": f"file://{warehouse_path}",
+        "uri": f"{postgres_connection}",
+        "warehouse": f"gs://{warehouse_path}",
     },
 )
 
