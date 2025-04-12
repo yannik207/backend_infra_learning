@@ -25,7 +25,7 @@ resource "kubernetes_service" "postgres-service" {
       protocol    = "TCP" # Protocol (TCP is common for Postgres)
     }
 
-    type = "ClusterIP" # You can also set this to LoadBalancer or NodePort if required
+    type = "LoadBalancer" # You can also set this to LoadBalancer or NodePort if required
   }
 
 }
