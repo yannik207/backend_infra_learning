@@ -4,7 +4,7 @@ import pyarrow.compute as pc
 from os import getenv
 
 
-postgres_connection = getenv.environ("postgres_connection")
+postgres_connection = getenv("postgres")
 
 warehouse_path = "yannik-test-iceberg-lakehouse"
 catalog = load_catalog(

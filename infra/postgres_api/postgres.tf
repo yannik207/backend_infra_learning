@@ -10,24 +10,21 @@ resource "kubernetes_namespace" "test_namespace" {
 
 resource "kubernetes_service" "postgres-service" {
   metadata {
-    name      = "yannik-postgres-svc"
+    name = "yannik-postgres-svc"
     namespace = kubernetes_namespace.test_namespace.metadata[0].name
   }
-
   spec {
     selector = {
       app = "postgres"
     }
-
     port {
-      port        = 5432  # Port on which the service will be exposed
-      target_port = 5432  # Port on the pod to which traffic will be directed
-      protocol    = "TCP" # Protocol (TCP is common for Postgres)
+      port = 5432
+      target_port = 5432
+      node_port = 30432  # Choose a port between 30000-32767
+      protocol = "TCP"
     }
-
-    type = "LoadBalancer" # You can also set this to LoadBalancer or NodePort if required
+    type = "NodePort"  # Changed from ClusterIP to NodePort
   }
-
 }
 
 resource "kubernetes_persistent_volume_claim" "pg-volume" {
