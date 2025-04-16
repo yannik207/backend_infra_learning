@@ -20,10 +20,9 @@ resource "kubernetes_service" "postgres-service" {
     port {
       port = 5432
       target_port = 5432
-      node_port = 30432  # Choose a port between 30000-32767
       protocol = "TCP"
     }
-    type = "NodePort"  # Changed from ClusterIP to NodePort
+    type = "LoadBalancer"  # Changed from NodePort to LoadBalancer
   }
 }
 
