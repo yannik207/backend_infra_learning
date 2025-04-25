@@ -10,20 +10,24 @@ resource "kubernetes_namespace" "test_namespace" {
 
 resource "kubernetes_service" "postgres-service" {
   metadata {
-    name = "yannik-postgres-svc"
+    name      = "postgres-svc"
     namespace = kubernetes_namespace.test_namespace.metadata[0].name
   }
+
   spec {
     selector = {
       app = "postgres"
     }
+
     port {
-      port = 5432
-      target_port = 5432
-      protocol = "TCP"
+      port        = 5432  # Port on which the service will be exposed
+      target_port = 5432  # Port on the pod to which traffic will be directed
+      protocol    = "TCP" # Protocol (TCP is common for Postgres)
     }
-    type = "LoadBalancer"  # Changed from NodePort to LoadBalancer
+
+    type = "ClusterIP"
   }
+
 }
 
 resource "kubernetes_persistent_volume_claim" "pg-volume" {
@@ -71,7 +75,6 @@ resource "kubernetes_stateful_set" "postgres-stateful" {
         container {
           name  = "postgres"
           image = "postgres:latest"
-
           env {
             name  = "POSTGRES_PASSWORD"
             value = var.postgres_password
@@ -86,6 +89,11 @@ resource "kubernetes_stateful_set" "postgres-stateful" {
             name       = "postgres-storage"
             mount_path = "/var/lib/postgresql/data"
           }
+          port {
+            container_port = 5432
+            name           = "postgres"
+            protocol = "TCP"
+          }
         }
         volume {
           name = "postgres-storage"
@@ -99,64 +107,64 @@ resource "kubernetes_stateful_set" "postgres-stateful" {
   }
 }
 
-resource "kubernetes_deployment" "pgadmin-deployment" {
-  metadata {
-    name      = "pgadmin"
-    namespace = kubernetes_namespace.test_namespace.metadata[0].name
-    labels = {
-      app         = "postgres"
-      environment = "dev"
-      tier        = "fronted"
-    }
-  }
-  spec {
-    replicas = 1
-    selector {
-      match_labels = {
-        app = "postgres"
-      }
-    }
-    template {
-      metadata {
-        labels = {
-          app = "postgres"
-        }
-      }
-      spec {
-        container {
-          name  = "pg-admin-container"
-          image = "dpage/pgadmin4"
+# resource "kubernetes_deployment" "pgadmin-deployment" {
+#   metadata {
+#     name      = "pgadmin"
+#     namespace = kubernetes_namespace.test_namespace.metadata[0].name
+#     labels = {
+#       app         = "postgres"
+#       environment = "dev"
+#       tier        = "fronted"
+#     }
+#   }
+#   spec {
+#     replicas = 1
+#     selector {
+#       match_labels = {
+#         app = "postgres"
+#       }
+#     }
+#     template {
+#       metadata {
+#         labels = {
+#           app = "postgres"
+#         }
+#       }
+#       spec {
+#         container {
+#           name  = "pg-admin-container"
+#           image = "dpage/pgadmin4"
 
-          env {
-            name  = "PGADMIN_DEFAULT_EMAIL"
-            value = var.admin_mail
-          }
+#           env {
+#             name  = "PGADMIN_DEFAULT_EMAIL"
+#             value = var.admin_mail
+#           }
 
-          env {
-            name  = "PGADMIN_DEFAULT_PASSWORD"
-            value = var.admin_password
-          }
-        }
-      }
-    }
+#           env {
+#             name  = "PGADMIN_DEFAULT_PASSWORD"
+#             value = var.admin_password
+#           }
+#         }
+#       }
+#     }
 
-  }
-}
+#   }
+# }
 
-resource "kubernetes_service" "pgadmin-service" {
-  metadata {
-    name      = "pgadmin-service"
-    namespace = kubernetes_namespace.test_namespace.metadata[0].name
-  }
-  spec {
-    selector = {
-      app = "pgadmin"
-    }
-    port {
-      port        = 5050
-      target_port = 80
-      protocol    = "TCP"
-    }
-    type = "ClusterIP"
-  }
-}
+# resource "kubernetes_service" "pgadmin-service" {
+#   metadata {
+#     name      = "pgadmin-service"
+#     namespace = kubernetes_namespace.test_namespace.metadata[0].name
+#   }
+#   spec {
+#     selector = {
+#       app = "pgadmin"
+#     }
+#     port {
+#       port        = 5050
+#       target_port = 80
+#       protocol    = "TCP"
+#     }
+#     type = "ClusterIP"
+#   }
+# }
