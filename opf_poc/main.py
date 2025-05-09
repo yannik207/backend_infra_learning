@@ -1,6 +1,5 @@
 from pyiceberg.catalog import load_catalog
 import pyarrow.parquet as pq
-import pyarrow.compute as pc
 from os import getenv
 
 
@@ -22,7 +21,7 @@ ns = catalog.list_namespaces()
 if ns != [("default",)]:
     catalog.create_namespace("default")
 
-if catalog.table_exists("default.taxi_dataset") == False:
+if catalog.table_exists("default.taxi_dataset") is False:
     table = catalog.create_table(
         "default.taxi_dataset",
         schema=df.schema,

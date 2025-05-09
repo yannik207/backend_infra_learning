@@ -92,7 +92,7 @@ resource "kubernetes_stateful_set" "postgres-stateful" {
           port {
             container_port = 5432
             name           = "postgres"
-            protocol = "TCP"
+            protocol       = "TCP"
           }
         }
         volume {
@@ -107,64 +107,64 @@ resource "kubernetes_stateful_set" "postgres-stateful" {
   }
 }
 
-# resource "kubernetes_deployment" "pgadmin-deployment" {
-#   metadata {
-#     name      = "pgadmin"
-#     namespace = kubernetes_namespace.test_namespace.metadata[0].name
-#     labels = {
-#       app         = "postgres"
-#       environment = "dev"
-#       tier        = "fronted"
-#     }
-#   }
-#   spec {
-#     replicas = 1
-#     selector {
-#       match_labels = {
-#         app = "postgres"
-#       }
-#     }
-#     template {
-#       metadata {
-#         labels = {
-#           app = "postgres"
-#         }
-#       }
-#       spec {
-#         container {
-#           name  = "pg-admin-container"
-#           image = "dpage/pgadmin4"
+resource "kubernetes_deployment" "pgadmin-deployment" {
+  metadata {
+    name      = "pgadmin"
+    namespace = kubernetes_namespace.test_namespace.metadata[0].name
+    labels = {
+      app         = "pgadmin"
+      environment = "dev"
+      tier        = "fronted"
+    }
+  }
+  spec {
+    replicas = 1
+    selector {
+      match_labels = {
+        app = "pgadmin"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "pgadmin"
+        }
+      }
+      spec {
+        container {
+          name  = "pg-admin-container"
+          image = "dpage/pgadmin4"
 
-#           env {
-#             name  = "PGADMIN_DEFAULT_EMAIL"
-#             value = var.admin_mail
-#           }
+          env {
+            name  = "PGADMIN_DEFAULT_EMAIL"
+            value = var.admin_mail
+          }
 
-#           env {
-#             name  = "PGADMIN_DEFAULT_PASSWORD"
-#             value = var.admin_password
-#           }
-#         }
-#       }
-#     }
+          env {
+            name  = "PGADMIN_DEFAULT_PASSWORD"
+            value = var.admin_password
+          }
+        }
+      }
+    }
 
-#   }
-# }
+  }
+}
 
-# resource "kubernetes_service" "pgadmin-service" {
-#   metadata {
-#     name      = "pgadmin-service"
-#     namespace = kubernetes_namespace.test_namespace.metadata[0].name
-#   }
-#   spec {
-#     selector = {
-#       app = "pgadmin"
-#     }
-#     port {
-#       port        = 5050
-#       target_port = 80
-#       protocol    = "TCP"
-#     }
-#     type = "ClusterIP"
-#   }
-# }
+resource "kubernetes_service" "pgadmin-service" {
+  metadata {
+    name      = "pgadmin-service"
+    namespace = kubernetes_namespace.test_namespace.metadata[0].name
+  }
+  spec {
+    selector = {
+      app = "pgadmin"
+    }
+    port {
+      port        = 5050
+      target_port = 80
+      protocol    = "TCP"
+    }
+    type = "ClusterIP"
+  }
+}
